@@ -5,22 +5,30 @@
     <title>LED Control</title>
 
 <style>
-    body {
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
         margin: 0;
-        height: 100vh;
+        height: 100%;
+        overflow: hidden; /* ZABRÁNI scrollu */
+        font-family: Arial, sans-serif;
+    }
+
+    body {
         display: flex;
         flex-direction: column;
-        font-family: Arial, sans-serif;
-        background: #111;
+        height: 100vh; /* presne výška obrazovky */
     }
 
     button {
         flex: 1;
         width: 100%;
         border: none;
-        font-size: 22px;
+        font-size: 4vh;
         color: white;
-        min-height: 70px;
+        min-height: 0;
         cursor: pointer;
         touch-action: manipulation;
     }
@@ -36,11 +44,10 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 20px;
-        font-size: 22px;
+        gap: 2vh;
+        font-size: 3vh;
         font-weight: bold;
-        padding: 20px;
-        text-align: center;
+        min-height: 0;
     }
 
     .sliderRow {
@@ -48,76 +55,46 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        max-width: 600px;
-        gap: 15px;
+        gap: 2vw;
+        padding: 0 10px;
     }
 
     .smallBtn {
-        width: 70px;
-        height: 70px;
-        font-size: 32px;
+        width: 10vh;
+        height: 10vh;
+        font-size: 4vh;
         border: none;
         background: #333;
         color: white;
         border-radius: 12px;
-        flex-shrink: 0;
     }
 
     input[type="range"] {
-        width: 100%;
-        max-width: 400px;
+        width: 60%;
+        max-width: 500px;
     }
 
     #dimValue {
-        font-size: 28px;
+        font-size: 4vh;
     }
 
     /* =========================
-       TABLET OPTIMIZATION
+       TABLET (lepší scaling)
     ========================= */
-    @media (min-width: 768px) and (max-width: 1200px) {
+    @media (min-width: 768px) {
 
         button {
-            font-size: 26px;
-            min-height: 90px;
-        }
-
-        .sliderBox {
-            font-size: 26px;
-            gap: 25px;
+            font-size: 5vh;
         }
 
         .smallBtn {
-            width: 85px;
-            height: 85px;
-            font-size: 38px;
-        }
-
-        input[type="range"] {
-            max-width: 500px;
-        }
-
-        #dimValue {
-            font-size: 34px;
-        }
-    }
-
-    /* =========================
-       LANDSCAPE TABLET (lepší rozloženie)
-    ========================= */
-    @media (min-width: 768px) and (orientation: landscape) {
-
-        body {
-            flex-direction: row;
-        }
-
-        button {
-            flex: 1;
-            height: 100%;
+            width: 12vh;
+            height: 12vh;
+            font-size: 5vh;
         }
 
         .sliderBox {
-            flex: 1;
+            font-size: 4vh;
         }
     }
 </style>
