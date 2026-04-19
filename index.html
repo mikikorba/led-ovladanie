@@ -1,118 +1,161 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-    <meta charset="UTF-8">
-    <title>LED Control</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LED Control</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
-
-    html, body {
-        margin: 0;
-        height: 100%;
-        overflow: hidden; /* ZABRÁNI scrollu */
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-        height: 90vh; /* presne výška obrazovky */
-	background: black;
-    }
-
-    button {
-        flex: 1;
-        width: 100%;
-        border: none;
-        color: white;
-        min-height: 0;
-        cursor: pointer;
-        touch-action: manipulation;
-  	outline: none;              /* odstráni focus rámik */
-    	-webkit-tap-highlight-color: transparent; /* mobile modré bliknutie */
-    	user-select: none;
-    }
-
-/* odstráni “zostávajúci focus stav” */
-button:focus {
-    outline: none;
+:root{
+    --bg: #0b0c10;
+    --card: rgba(255,255,255,0.06);
+    --card2: rgba(255,255,255,0.1);
+    --text: #eaeaea;
+    --accent: #7c5cff;
+    --red: #ff3b3b;
 }
 
-/* odstráni modré/šedé zvýraznenie po kliknutí */
-button:active {
-    outline: none;
+*{
+    box-sizing:border-box;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
-    .toggle { background: #0D0D0D; }
-    .dim { background: #0D0D0D; }
-    .rgb { background: #0D0D0D; }
-    .textin { 
-	font-family: Arial, sans-serif;
-        font-size: 3vh;
-    }
+html,body{
+    margin:0;
+    height:100%;
+    background: radial-gradient(circle at top, #1a1b23, var(--bg));
+    color:var(--text);
+    overflow:hidden;
+}
 
-    .sliderBox {
-        flex: 1;
-        background: #0D0D0D;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2vh;
-        min-height: 0;    	  
-	color: white;
-    }
+/* layout */
+body{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    padding:14px;
+}
 
-    .sliderRow {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        gap: 2vw;
-        padding: 0 10px;
-    }
+/* glass button base */
+button{
+    border:none;
+    color:white;
+    border-radius:16px;
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select:none;
+    transition: transform .08s ease, background .2s ease;
+}
 
-    .smallBtn {
-        width: 10vh;
-        height: 10vh;
-        border: none;
-        background: #333;
-        color: white;
-        border-radius: 12px;
-    }
+button:active{
+    transform: scale(0.97);
+}
 
-    input[type="range"] {
-        width: 60%;
-        max-width: 500px;
-    }
+/* TOP TOGGLE */
+.toggle{
+    flex:1;
+    background: linear-gradient(135deg, #2b2d3a, #14151c);
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:1px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+/* SLIDER CARD */
+.sliderBox{
+    flex:2;
+    background: var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:16px;
+    padding:16px;
+}
+
+.label{
+    font-size:18px;
+    opacity:0.9;
+}
+
+#dimValue{
+    color:var(--accent);
+    font-weight:700;
+}
+
+/* slider row */
+.sliderRow{
+    display:flex;
+    align-items:center;
+    width:100%;
+    gap:12px;
+}
+
+input[type="range"]{
+    flex:1;
+    accent-color: var(--accent);
+}
+
+/* +/- buttons */
+.smallBtn{
+    width:52px;
+    height:52px;
+    border-radius:14px;
+    background: var(--card2);
+    font-size:22px;
+    font-weight:bold;
+}
+
+/* ACTION BUTTONS */
+.action{
+    flex:1;
+    font-size:18px;
+    font-weight:600;
+    border-radius:18px;
+}
+
+.dim{
+    background: linear-gradient(135deg, #2d2d2d, #111);
+}
+
+.rgb{
+    background: linear-gradient(135deg, #3a0a0a, #1a0000);
+}
+
+.rgb:active{
+    box-shadow: 0 0 20px rgba(255,0,0,0.4);
+}
+
+/* text helper */
+.text{
+    opacity:0.9;
+}
 </style>
 </head>
 
 <body>
 
-<button class="toggle" onclick="sendToggle()"><div class="textin">ON / OFF</div></button>
+<button class="toggle" onclick="sendToggle()">💡 ON / OFF</button>
 
 <div class="sliderBox">
-    <div class="textin">JAS: <span id="dimValue">10</span></div>
+    <div class="label">JAS: <span id="dimValue">10</span>%</div>
 
     <div class="sliderRow">
-        <button class="smallBtn" onclick="changeDim(-5)"><div class="textin">-</div></button>
+        <button class="smallBtn" onclick="changeDim(-5)">−</button>
 
         <input type="range" min="0" max="100" value="10" id="dimSlider">
 
-        <button class="smallBtn" onclick="changeDim(5)"><div class="textin">+</div></button>
+        <button class="smallBtn" onclick="changeDim(5)">+</button>
     </div>
 </div>
 
-<button class="dim" onclick="sendDimAndPwm()"><div class="textin">Jemné Svetlo</div></button>
-<button class="rgb" onclick="sendRgb()"><div class="textin">Červené Svetlo</div></button>
+<button class="action dim" onclick="sendDimAndPwm()">✨ Jemné svetlo</button>
+<button class="action rgb" onclick="sendRgb()">🔴 Červené svetlo</button>
 
 <script>
-/* =========================
-   CONFIG
-========================= */
 const BASE = "http://192.168.1.55/index";
 
 const CFG = {
@@ -121,94 +164,57 @@ const CFG = {
     rgbIndex: 131
 };
 
-/* =========================
-   ELEMENTY
-========================= */
 const slider = document.getElementById("dimSlider");
 const output = document.getElementById("dimValue");
 
-/* =========================
-   ULTRA ROBUST SEND (MOBILE FIX)
-========================= */
-function send(url, label = "") {
-    console.log("SEND:", url);
-
-    // 1. skúsi fetch
-    fetch(url)
-        .then(r => {
-            console.log("OK FETCH:", label || url);
-        })
-        .catch(err => {
-            console.warn("FETCH FAIL → fallback IMG:", err);
-
-            // 2. fallback (funguje aj keď CORS blokuje fetch)
-            const img = new Image();
-            img.src = url;
-        });
+function send(url){
+    fetch(url).catch(()=> {
+        const img = new Image();
+        img.src = url;
+    });
 }
 
-/* =========================
-   UI HELPERS
-========================= */
-function updateUI(value) {
-    value = clamp(value, 0, 100);
-    slider.value = value;
-    output.textContent = value;
+function clamp(v,min,max){
+    return Math.max(min, Math.min(max,v));
 }
 
-function getDimValue() {
-    return parseInt(slider.value);
+function updateUI(v){
+    v = clamp(v,0,100);
+    slider.value = v;
+    output.textContent = v;
 }
 
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
+function setDim(v){
+    v = clamp(parseInt(v),0,100);
+    updateUI(v);
+    send(`${BASE}?dim=${v}&dimIndex=${CFG.dimIndex}`);
 }
 
-/* =========================
-   DIM CONTROL
-========================= */
-function setDim(value) {
-    value = clamp(parseInt(value), 0, 100);
-
-    updateUI(value);
-    sendDim(value);
+function changeDim(step){
+    setDim(parseInt(slider.value) + step);
 }
 
-function changeDim(step) {
-    setDim(getDimValue() + step);
-}
-
-function sendDim(dimValue) {
-    send(`${BASE}?dim=${dimValue}&dimIndex=${CFG.dimIndex}`, "dim");
-}
-
-/* slider behavior */
-slider.addEventListener("input", function () {
-    output.textContent = this.value;
+slider.addEventListener("input", e=>{
+    output.textContent = e.target.value;
 });
 
-slider.addEventListener("change", function () {
-    setDim(this.value);
+slider.addEventListener("change", e=>{
+    setDim(e.target.value);
 });
 
-/* =========================
-   BUTTON ACTIONS
-========================= */
-function sendToggle() {
-    send(`${BASE}?tgl=130`, "toggle");
+function sendToggle(){
+    send(`${BASE}?tgl=130`);
 }
 
-async function sendDimAndPwm() {
+function sendDimAndPwm(){
     send(`${BASE}?dim=10&dimIndex=${CFG.dimIndex}`);
     send(`${BASE}?pwmIndex=${CFG.pwmIndex}&pwm=500`);
-
     updateUI(10);
 }
 
-async function sendRgb() {
+function sendRgb(){
     send(`${BASE}?rgb=%23ff0000&rgbIndex=${CFG.rgbIndex}`);
     send(`${BASE}?dim=100&dimIndex=${CFG.dimIndex}`);
-
     updateUI(100);
 }
 </script>
