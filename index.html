@@ -1,187 +1,117 @@
-<!DOCTYPE html>
-<html lang="sk">
-<head>
-    <meta charset="UTF-8">
-    <title>LED Control</title>
+<style>
+    body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+        background: #111;
+    }
 
-    <style>
+    button {
+        flex: 1;
+        width: 100%;
+        border: none;
+        font-size: 22px;
+        color: white;
+        min-height: 70px;
+        cursor: pointer;
+        touch-action: manipulation;
+    }
+
+    .toggle { background: #e74c3c; }
+    .dim { background: #3498db; }
+    .rgb { background: #2ecc71; }
+
+    .sliderBox {
+        flex: 1;
+        background: #f1c40f;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        font-size: 22px;
+        font-weight: bold;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .sliderRow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        max-width: 600px;
+        gap: 15px;
+    }
+
+    .smallBtn {
+        width: 70px;
+        height: 70px;
+        font-size: 32px;
+        border: none;
+        background: #333;
+        color: white;
+        border-radius: 12px;
+        flex-shrink: 0;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    #dimValue {
+        font-size: 28px;
+    }
+
+    /* =========================
+       TABLET OPTIMIZATION
+    ========================= */
+    @media (min-width: 768px) and (max-width: 1200px) {
+
+        button {
+            font-size: 26px;
+            min-height: 90px;
+        }
+
+        .sliderBox {
+            font-size: 26px;
+            gap: 25px;
+        }
+
+        .smallBtn {
+            width: 85px;
+            height: 85px;
+            font-size: 38px;
+        }
+
+        input[type="range"] {
+            max-width: 500px;
+        }
+
+        #dimValue {
+            font-size: 34px;
+        }
+    }
+
+    /* =========================
+       LANDSCAPE TABLET (lepší rozloženie)
+    ========================= */
+    @media (min-width: 768px) and (orientation: landscape) {
+
         body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            flex-direction: row;
         }
 
         button {
             flex: 1;
-            width: 100%;
-            border: none;
-            font-size: 24px;
-            color: white;
+            height: 100%;
         }
-
-        .toggle { background: #e74c3c; }
-        .dim { background: #3498db; }
-        .rgb { background: #2ecc71; }
 
         .sliderBox {
             flex: 1;
-            background: #f1c40f;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-size: 24px;
-            font-weight: bold;
         }
-
-        .sliderRow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            gap: 10px;
-        }
-
-        .smallBtn {
-            width: 60px;
-            height: 60px;
-            font-size: 30px;
-            border: none;
-            background: #333;
-            color: white;
-            border-radius: 10px;
-        }
-
-        input[type="range"] {
-            width: 60%;
-        }
-    </style>
-</head>
-
-<body>
-
-<button class="toggle" onclick="sendToggle()">TOGGLE</button>
-
-<div class="sliderBox">
-    <div>DIM: <span id="dimValue">10</span></div>
-
-    <div class="sliderRow">
-        <button class="smallBtn" onclick="changeDim(-5)">−</button>
-
-        <input type="range" min="0" max="100" value="10" id="dimSlider">
-
-        <button class="smallBtn" onclick="changeDim(5)">+</button>
-    </div>
-</div>
-
-<button class="dim" onclick="sendDimAndPwm()">DIM + PWM</button>
-<button class="rgb" onclick="sendRgb()">RGB</button>
-
-<script>
-/* =========================
-   CONFIG
-========================= */
-const BASE = "http://192.168.1.55/index";
-
-const CFG = {
-    dimIndex: 129,
-    pwmIndex: 132,
-    rgbIndex: 131
-};
-
-/* =========================
-   ELEMENTY
-========================= */
-const slider = document.getElementById("dimSlider");
-const output = document.getElementById("dimValue");
-
-/* =========================
-   ULTRA ROBUST SEND (MOBILE FIX)
-========================= */
-function send(url, label = "") {
-    console.log("SEND:", url);
-
-    // 1. skúsi fetch
-    fetch(url)
-        .then(r => {
-            console.log("OK FETCH:", label || url);
-        })
-        .catch(err => {
-            console.warn("FETCH FAIL → fallback IMG:", err);
-
-            // 2. fallback (funguje aj keď CORS blokuje fetch)
-            const img = new Image();
-            img.src = url;
-        });
-}
-
-/* =========================
-   UI HELPERS
-========================= */
-function updateUI(value) {
-    value = clamp(value, 0, 100);
-    slider.value = value;
-    output.textContent = value;
-}
-
-function getDimValue() {
-    return parseInt(slider.value);
-}
-
-function clamp(value, min, max) {
-    return Math.max(min, Math.min(max, value));
-}
-
-/* =========================
-   DIM CONTROL
-========================= */
-function setDim(value) {
-    value = clamp(parseInt(value), 0, 100);
-
-    updateUI(value);
-    sendDim(value);
-}
-
-function changeDim(step) {
-    setDim(getDimValue() + step);
-}
-
-function sendDim(dimValue) {
-    send(`${BASE}?dim=${dimValue}&dimIndex=${CFG.dimIndex}`, "dim");
-}
-
-/* slider behavior */
-slider.addEventListener("input", function () {
-    output.textContent = this.value;
-});
-
-slider.addEventListener("change", function () {
-    setDim(this.value);
-});
-
-/* =========================
-   BUTTON ACTIONS
-========================= */
-function sendToggle() {
-    send(`${BASE}?tgl=130`, "toggle");
-}
-
-async function sendDimAndPwm() {
-    send(`${BASE}?dim=10&dimIndex=${CFG.dimIndex}`);
-    send(`${BASE}?pwmIndex=${CFG.pwmIndex}&pwm=500`);
-
-    updateUI(10);
-}
-
-async function sendRgb() {
-    send(`${BASE}?rgb=%23ff0000&rgbIndex=${CFG.rgbIndex}`);
-    send(`${BASE}?dim=100&dimIndex=${CFG.dimIndex}`);
-
-    updateUI(100);
-}
-</script>
-
-</body>
-</html>
+    }
+</style>
