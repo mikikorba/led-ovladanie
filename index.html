@@ -30,7 +30,20 @@
         min-height: 0;
         cursor: pointer;
         touch-action: manipulation;
+  	outline: none;              /* odstráni focus rámik */
+    	-webkit-tap-highlight-color: transparent; /* mobile modré bliknutie */
+    	user-select: none;
     }
+
+/* odstráni “zostávajúci focus stav” */
+button:focus {
+    outline: none;
+}
+
+/* odstráni modré/šedé zvýraznenie po kliknutí */
+button:active {
+    outline: none;
+}
 
     .toggle { background: #0D0D0D; }
     .dim { background: #0D0D0D; }
